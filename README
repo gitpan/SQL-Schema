@@ -1,0 +1,76 @@
+NAME
+    SQL::Schema - Convert a data dictionary into SQL statements
+
+SYNOPSIS
+      use DBI;
+
+      my $dbh = DBI->connect(...);
+
+      use SQL::Schema;
+
+      my $schema = SQL::Schema->new($dbh);
+
+      my $sql = $schema->string;
+      print $sql;
+
+      print "$schema";
+
+WARNING
+    This is alpha software. It currently works with Oracle databases
+    only. The name of the module might be changed in future releases
+    as well as its interface.
+
+    If somebody is modifying the datase schema during the life time
+    of an `SQL::Schema' object, the object will probably fail and /
+    or produce wrong information.
+
+DESCRIPTION
+    `SQL::Schema' is a class for objects representing a database
+    schema. The methods of an instanciated object do allow to access
+    the information within a database's data dictionary and to
+    represent them as SQL create statements and the like using the
+    proper SQL dialect.
+
+  Constructor
+
+      $schema = SQL::Schema->new($dbh);
+
+    The new method instanciates a schema object. The only argument
+    required is a database handle, which has to offer the same API
+    as described within the DBI(3) manpage.
+
+  Methods
+
+      $sql = $schema->string;
+
+    Returns an SQL string containing several statements at once.
+    This string contains all the SQL statements to create the
+    database schema.
+
+    This method is overloaded with the string operator. So the
+    following two lines are equivalent:
+
+      $sql = $schema->string;
+      $sql = "$schema";
+
+AUTHOR AND COPYRIGHT
+      SQL::Schema is Copyright (C) 2000, Torsten Hentschel
+                                         Windmuehlenweg 47
+                                         44141 Dortmund
+                                         Germany
+
+                                         Email: todd@bayleys.ping.de
+
+      All rights reserved.
+
+      You may distribute this package under the terms of either the GNU
+      General Public License or the Artistic License, as specified in the
+      Perl README file.
+
+SEE ALSO
+    the export_schema(1) manpage, the DBI(3) manpage, the
+    SQL::Schema::Procedure(3) manpage, the SQL::Schema::Sequence(3)
+    manpage, the SQL::Schema::Table(3) manpage, the
+    SQL::Schema::Trigger(3) manpage, the SQL::Schema::View(3)
+    manpage
+

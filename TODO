@@ -1,0 +1,33 @@
+- get rid of the ugly quick hack within SQL::Schema::Table->create_statement
+  which eleminates system generated not null constraints as they also occur
+  within user_tab_columns as attribute
+
+- make use of schema name consistent
+
+- support partitioned tables
+
+- need to do more checking within SQL::Schema::Sequence->new()
+  - min_value < max_value (requires BIG integer arithmetics)
+  - abs(increment_by) < max_value - min_value
+  - cache_size > 0
+  - cache_size < max_value - min_value
+  - last_number in [ min_value, max_value ]
+  - sequence_name and schema_name need to consist of allowed characters
+
+- split SQL::Schema::Constraint into several classes:
+    SQL::Schema::Constraint                  as abstract class
+    SQL::Schema::Constraint::Check           derived
+    SQL::Schema::Constraint::PrimaryKey        "
+    SQL::Schema::Constraint::Unique            "
+    SQL::Schema::Constraint::Referential       "
+    SQL::Schema::Constraint::VCheck            "
+
+- fix bug within SQL::Schema::Sequence->select() introduced
+  by start_with = last_number + increment_by
+
+- support all of Oracle's attributes for a table with SQL::Schema::Table;
+  currently only a very small set of attributes is supported
+
+- support all of Oracle's attributes for a column with
+  SQL::Schema::Table::Column; currently only a small set of attributes
+  is supported

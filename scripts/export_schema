@@ -1,0 +1,160 @@
+#!/bin/perl -w
+
+use strict;
+
+use DBI;
+use Getopt::Long;
+use SQL::Schema;
+
+main();
+exit(0);
+
+sub main {
+  my %opt = get_opt();
+
+  print
+    SQL::Schema->new(
+      DBI->connect( @opt{qw(data-source username auth)} )
+    )->string;
+}
+
+
+sub get_opt {
+  my %opt;
+  @opt{qw(data-source username auth)}
+    = @ENV{qw(DBI_DATA_SOURCE DBI_USERNAME DBI_AUTH)};
+  GetOptions(\%opt,qw(data-source=s username=s auth=s))
+    or die usage();
+  for (keys %opt) {
+    die "option $_ is not set\n" . usage()
+      unless defined $opt{$_};
+  }
+  return %opt;
+}
+
+
+sub usage {
+  "usage: $0 [-data-source <database>] [-username <user>] [-auth <password>]\n"
+ ."  Defaults for the command line options are taken from the environment\n"
+ ."  as follows:\n"
+ ."\n"
+ ."       option        environment\n"
+ ."\n"
+ ."       -data-source  DBI_DATA_SOURCE\n"
+ ."       -username     DBI_USERNAME\n"
+ ."       -auth         DBI_AUTH\n"
+ ."\n"
+ ."  For more information please have a look at the output of\n"
+ ."      man export_schema     resp.\n"
+ ."      perldoc export_schema\n";
+}
+
+
+__END__
+
+=pod
+
+=head1 NAME
+
+export_schema  - Prints a database schema as plain SQL
+
+=head1 SYNOPSIS
+
+  $ export_schema -data-source dbi:Oracle:hobbit \
+  >               -username frodo \
+  >               -auth bilbo
+
+or with abbreviated options
+
+  $ export_schema -d dbi:Oracle:hobbit -u frodo -a bilbo
+
+or with defaults from the environment
+
+  $ DBI_DATA_SOURCE='dbi:Oracle:hobbit'
+  $ DBI_USERNAME='frodo'
+  $ DBI_AUTH='bilbo'
+  $ export DBI_DATA_SOURCE DBI_USERNAME DBI_AUTH
+  $ export_schema
+
+or more sophisticated
+
+  $ DBI_DATA_SOURCE='dbi:Oracle:hobbit' \
+  > DBI_USERNAME='frodo' \
+  > DBI_AUTH='bilbo' \
+  > export_schema
+
+or mixed
+
+  $ DBI_AUTH=bibo export_schema -d dbi:Oracle:hobbit -u frodo
+
+=head1 DESCRIPTION
+
+This short script reads the data dictionary of an Oracle database
+and prints corresponding plain SQL create statements to stdout.
+These create statements can be used as input for sqlplus to duplicate
+the schema on another database.
+
+The meanding of the command line options is as follows
+
+=over
+
+=item B<-data-source>
+
+A string identifying the database to connect to.
+
+=item B<-username>
+
+The name of the database user.
+
+=item B<-auth>
+
+The database user's password.
+
+=back
+
+The values of the options are handed over to DBI's connect method
+in the given sequence. Please have a look at L<DBI(3)> for more information.
+
+=head1 ENVIRONMENT
+
+The script takes the defaults for the command line options
+from the environment. Three environment variables are used
+as shown above at SYNOPSIS. These variables correspond to
+the first three arguments handed over to DBI's C<connect()> method.
+For more information about possible values please have a look at
+L<DBI(3)>.
+
+The use of environment variables helps you to hide
+the username and / or password. If you set the password
+with the command line option, everybody with an account
+on the machine can use the command `ps' to view your database
+password.
+
+=head1 CAVEAT
+
+This software is still under development. Not all tweaks are supported
+by now. This means: The create statements produced on stdout might
+not create exactly the same schema if you execute them.
+For more information, please have a look at the TODO file that comes
+with this perl module.
+
+=head1 AUTHOR AND COPYRIGHT
+
+  SQL::Schema is Copyright (C) 2000, Torsten Hentschel
+                                     Windmuehlenweg 47
+                                     44141 Dortmund
+                                     Germany
+
+                                     Email: todd@bayleys.ping.de
+
+  All rights reserved.
+
+  You may distribute this package under the terms of either the GNU
+  General Public License or the Artistic License, as specified in the
+  Perl README file.
+
+=head1 SEE ALSO
+
+L<SQL::Schema(3)>, L<DBI(3)>
+
+=cut

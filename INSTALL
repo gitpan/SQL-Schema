@@ -1,0 +1,44 @@
+1) Requirements
+
+This module currently only works with an Oracle database.
+It has been tested with Oracle 8i on Linux should also work
+with Oracle 8.0.x on other platforms.
+The module requires DBI.
+
+Last but not least: To perform the tests, you do need a
+blank database user (a database user not owning any database
+object like table, view, package, ...).
+
+
+2) Installation
+
+Before installation you have to set three environment variables as
+follows:
+  DBI_DATA_SOURCE='dbi:Oracle(LongReadLen=>65536):hobbit'
+  DBI_USERNAME='frodo'
+  DBI_AUTH='bilbo'
+  export DBI_DATA_SOURCE DBI_USERNAME DBI_AUTH
+They are only required if you want to test the packages prior to
+installation. These three enivronment variables correspond to the
+first three arguments for DBI's connect() method.
+
+THE GIVEN DATABASE USER NEEDS TO BE BLANK. This means: For the tests
+to succeed you have to name a user not owning any database object
+(neither table, nor view, nor package, ...).
+
+The rest of the installation process for this perl module is
+straight forward as with most of the perl modules using
+ExtUtils::MakeMaker. The following command sequence is sufficient:
+
+  perl Makefile.PL
+  make
+  make test
+  make install
+
+
+3) Usage
+
+After installation the script `export_schema' should be available.
+Depending on your system the man page export_schema(1) or the command
+  perldoc export_schema
+shows you more details about its usage.
